@@ -1,8 +1,15 @@
 # AI Coding × Trellis 演示项目
 
-这是一个基于 Vue 3、TypeScript 和 Vite 的前端演示项目，用于展示 AI Coding 与 Trellis 的日常开发流程。
+这是一个基于 Vue 3、TypeScript、Vite 和 Vitest 的报销记录看板，用于展示 AI Coding 与 Trellis 的日常开发流程。
 
-当前仓库只包含基础工程和中文化配置，不包含任何业务 Case。后续功能将通过现场演示任务逐步完成。
+## 基础功能
+
+- 新增报销记录。
+- 展示报销列表和状态。
+- 计算报销总额。
+- 使用纯前端内存数据，不连接后端。
+
+当前基线不包含状态筛选，也保留了 JavaScript 浮点金额直接计算的实现。这两部分分别用于后续普通任务和结构性任务演示。
 
 ## 本地开发
 
@@ -11,9 +18,10 @@ pnpm install
 pnpm dev
 ```
 
-## 构建检查
+## 质量检查
 
 ```bash
+pnpm test
 pnpm run build
 ```
 
