@@ -1,55 +1,56 @@
 # 类型安全
 
-> 当前类型模式以 [src/domain/expense.ts](../../../src/domain/expense.ts) 为准。
+> 当前类型模式以 [src/domain/score.ts](../../../src/domain/score.ts) 为准。
 
 ---
 
 ## 领域类型
 
-- 使用 `Expense` 描述报销记录的完整结构。
-- 使用字符串联合类型 `ExpenseStatus` 限定状态值，不接受任意字符串。
-- 状态中文映射声明为 `Record<ExpenseStatus, string>`，新增状态时由 TypeScript 提醒补全映射。
-- 不在组件中复制领域接口。
+- 使用 `StudentScore` 描述一条完整成绩记录。
+- 使用 `subjects as const` 同时生成运行时科目选项和 `Subject` 联合类型。
+- `subject` 不接受任意字符串，表单默认值显式满足 `Subject`。
+- 不在组件中复制领域接口或科目联合类型。
 
 ```typescript
-export type ExpenseStatus = 'pending' | 'approved' | 'rejected'
+export const subjects = ['语文', '数学', '英语'] as const
+export type Subject = (typeof subjects)[number]
 
-export interface Expense {
+export interface StudentScore {
   id: string
-  purpose: string
-  amount: number
-  status: ExpenseStatus
-  submittedAt: string
+  studentName: string
+  subject: Subject
+  score: number
+  recordedAt: string
 }
 ```
 
 ## 只读边界
 
-- 不会修改的集合使用 `readonly` 参数或 `readonly Expense[]`。
-- `calculateExpenseTotal()` 接受只读集合，保证计算函数不会修改调用方状态。
+- 不会修改的集合使用 `readonly` 参数或 `readonly StudentScore[]`。
+- `calculateAverageScore()` 和 `findHighestScore()` 接受只读集合，保证统计函数不会修改调用方状态。
 - 初始演示数据对外暴露为只读集合，组件持有自己的可变副本。
 
-## 输入校验
+## 输入边界
 
-表单虽然由 TypeScript 管理，浏览器输入仍然属于运行时数据。构造领域对象前必须检查：
+shadcn-vue `Input` 的表单值在进入领域对象前显式转换：
 
-- 文本清理后不能为空。
-- 金额不能为 `null`。
-- 金额必须通过 `Number.isFinite()`。
-- 金额必须大于零。
+- 学生姓名清理首尾空格后不能为空。
+- 成绩原始值不能为空字符串。
+- 使用 `Number(...)` 转换数字输入。
+- 转换结果必须通过 `Number.isFinite()`。
 
-参考：[src/App.vue](../../../src/App.vue) 中的 `addExpense()`。
+当前基础版没有成绩范围和整数规则。后续若建立这些约束，应由领域函数统一表达并被表单、统计和导入复用。
 
-## 类型推导与显式声明
+## 路径和配置
 
-- 简单局部值优先依赖类型推导。
-- 公共数据结构、函数参数和返回值显式声明类型。
-- 需要表达业务取值范围时使用联合类型，不使用普通 `string`。
-- 状态映射使用 `Record` 等工具类型保证覆盖完整。
+- 业务代码使用 `@/` 别名引用 `src/`。
+- TypeScript `paths` 与 Vite `resolve.alias` 必须保持一致。
+- TypeScript 6 不使用已经弃用的 `baseUrl`，也不通过 `ignoreDeprecations` 隐藏配置问题。
 
 ## 禁止模式
 
 - 禁止使用 `any` 绕过类型检查。
-- 禁止在组件中使用强制断言掩盖未校验的输入。
+- 禁止用强制断言掩盖未校验的表单输入。
 - 禁止为同一领域对象维护多份形状相近但语义不清的接口。
-- 禁止把可变数组参数传给只需要读取数据的计算函数。
+- 禁止把可变数组参数传给只需要读取数据的统计函数。
+- 禁止在组件中复制成绩范围或等级区间。

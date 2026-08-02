@@ -1,6 +1,6 @@
 # 前端开发规范
 
-> 本目录记录报销看板当前已经落地的前端约定。规范来自真实代码，后续任务应在实现变化时同步更新。
+> 本目录记录学生成绩看板当前已经落地的前端约定。规范来自真实代码，后续任务应在实现变化时同步更新。
 
 ---
 
@@ -8,11 +8,12 @@
 
 - Vue 3 单文件组件与 `<script setup lang="ts">`。
 - TypeScript 严格类型检查。
-- Vite 负责开发与构建。
-- Vitest 负责单元测试和组件测试。
+- Vite 与 Tailwind CSS v4 负责开发、构建和样式生成。
+- shadcn-vue Nova 风格组件基于 Reka UI，组件源码保存在仓库中。
+- Vitest 与 Vue Test Utils 负责领域单元测试和页面组件测试。
 - 数据仅保存在当前页面内存中，不接后端，也不使用全局状态库。
 
-参考配置：[package.json](../../../package.json)、[vite.config.ts](../../../vite.config.ts) 和 [tsconfig.app.json](../../../tsconfig.app.json)。
+参考：[package.json](../../../package.json)、[components.json](../../../components.json)、[vite.config.ts](../../../vite.config.ts) 和 [tsconfig.app.json](../../../tsconfig.app.json)。
 
 ---
 
@@ -20,11 +21,11 @@
 
 | 规范 | 适用内容 |
 | --- | --- |
-| [目录结构](./directory-structure.md) | 源码职责、文件位置和测试位置 |
-| [组件规范](./component-guidelines.md) | Vue 组件、表单与可访问性 |
-| [状态管理](./state-management.md) | 页面状态、派生状态和不可变更新 |
-| [领域模型](./domain-model.md) | 报销数据结构、状态与金额计算 |
-| [类型安全](./type-safety.md) | TypeScript 类型、边界校验和禁止模式 |
+| [目录结构](./directory-structure.md) | 源码职责、Registry 组件和测试位置 |
+| [组件规范](./component-guidelines.md) | Vue 组件、shadcn-vue、表单与可访问性 |
+| [状态管理](./state-management.md) | 页面状态、派生统计和不可变更新 |
+| [领域模型](./domain-model.md) | 学生成绩、科目和统计计算 |
+| [类型安全](./type-safety.md) | TypeScript 类型、输入边界和禁止模式 |
 | [质量规范](./quality-guidelines.md) | 测试策略、验证命令和审核清单 |
 
 ---
@@ -32,9 +33,10 @@
 ## 开发前检查
 
 1. 先阅读与任务相关的规范文件，不要只读本索引。
-2. 修改公共字段、状态或计算方式前，使用 `rg` 查找所有消费者。
-3. 业务计算优先放在 `src/domain/` 的纯函数中，组件只负责交互和展示。
-4. 修改行为时同步更新相邻测试。
+2. 修改成绩字段、科目或统计方式前，使用 `rg` 查找所有消费者。
+3. 业务计算放在 `src/domain/` 的纯函数中，组件只负责交互和展示。
+4. UI 优先组合 `src/components/ui/` 中已有的 shadcn-vue 组件。
+5. 修改行为时同步更新相邻测试。
 
 ## 质量检查
 
