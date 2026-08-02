@@ -1,59 +1,59 @@
-# Component Guidelines
+# 组件规范
 
-> How components are built in this project.
+> 本项目构建 Vue 组件时遵循的约定。
 
 ---
 
-## Overview
+## 概述
 
 <!--
-Document your project's component conventions here.
+请在项目形成稳定实践后补充组件约定。
 
-Questions to answer:
-- What component patterns do you use?
-- How are props defined?
-- How do you handle composition?
-- What accessibility standards apply?
+建议回答：
+- 使用哪些组件模式？
+- Props 和 Emits 如何定义？
+- 如何拆分和组合组件？
+- 需要满足哪些无障碍要求？
 -->
 
-(To be filled by the team)
+（待团队根据实际代码补充）
 
 ---
 
-## Component Structure
+## 组件结构
 
-<!-- Standard structure of a component file -->
+<!-- 记录单文件组件的标准结构与代码排列顺序。 -->
 
-(To be filled by the team)
-
----
-
-## Props Conventions
-
-<!-- How props should be defined and typed -->
-
-(To be filled by the team)
+（待团队根据实际代码补充）
 
 ---
 
-## Styling Patterns
+## Props 与 Emits 约定
 
-<!-- How styles are applied (CSS modules, styled-components, Tailwind, etc.) -->
+<!-- 记录 Props、Emits 的定义、类型和默认值约定。 -->
 
-(To be filled by the team)
-
----
-
-## Accessibility
-
-<!-- A11y requirements and patterns -->
-
-(To be filled by the team)
+（待团队根据实际代码补充）
 
 ---
 
-## Common Mistakes
+## 样式约定
 
-<!-- Component-related mistakes your team has made -->
+<!-- 记录全局样式、Scoped CSS、CSS Modules 或其他方案的使用边界。 -->
 
-(To be filled by the team)
+（待团队根据实际代码补充）
+
+---
+
+## 无障碍要求
+
+<!-- 记录语义化标签、键盘操作、焦点状态和 ARIA 等要求。 -->
+
+（待团队根据实际代码补充）
+
+---
+
+## 常见问题
+
+<!-- 记录项目中真实出现过的组件问题与预防方式。 -->
+
+（待团队根据实际代码补充）

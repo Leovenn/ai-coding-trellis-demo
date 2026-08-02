@@ -1,39 +1,39 @@
-# Frontend Development Guidelines
+# 前端开发规范
 
-> Best practices for frontend development in this project.
-
----
-
-## Overview
-
-This directory contains guidelines for frontend development. Fill in each file with your project's specific conventions.
+> 本项目的前端开发约定与实践索引。
 
 ---
 
-## Guidelines Index
+## 概述
 
-| Guide | Description | Status |
-|-------|-------------|--------|
-| [Directory Structure](./directory-structure.md) | Module organization and file layout | To fill |
-| [Component Guidelines](./component-guidelines.md) | Component patterns, props, composition | To fill |
-| [Hook Guidelines](./hook-guidelines.md) | Custom hooks, data fetching patterns | To fill |
-| [State Management](./state-management.md) | Local state, global state, server state | To fill |
-| [Quality Guidelines](./quality-guidelines.md) | Code standards, forbidden patterns | To fill |
-| [Type Safety](./type-safety.md) | Type patterns, validation | To fill |
+本目录用于记录项目真实采用的前端开发规范。项目刚初始化时可以保留“待补充”状态，后续应根据已经落地的代码和团队共识逐步完善。
 
 ---
 
-## How to Fill These Guidelines
+## 规范索引
 
-For each guideline file:
-
-1. Document your project's **actual conventions** (not ideals)
-2. Include **code examples** from your codebase
-3. List **forbidden patterns** and why
-4. Add **common mistakes** your team has made
-
-The goal is to help AI assistants and new team members understand how YOUR project works.
+| 规范 | 说明 | 状态 |
+| --- | --- | --- |
+| [目录结构](./directory-structure.md) | 模块组织与文件布局 | 待补充 |
+| [组件规范](./component-guidelines.md) | 组件模式、Props 与组合方式 | 待补充 |
+| [组合式函数规范](./hook-guidelines.md) | Composable、数据请求与状态逻辑复用 | 待补充 |
+| [状态管理](./state-management.md) | 本地状态、全局状态与服务端状态 | 待补充 |
+| [质量规范](./quality-guidelines.md) | 代码标准、测试与禁止模式 | 待补充 |
+| [类型安全](./type-safety.md) | 类型组织、推导与运行时校验 | 待补充 |
 
 ---
 
-**Language**: All documentation should be written in **English**.
+## 如何完善规范
+
+填写每份规范时：
+
+1. 记录项目已经采用的真实约定，而不是理想方案。
+2. 引用仓库中的真实代码作为示例。
+3. 说明禁止使用的模式及其原因。
+4. 记录团队遇到过的常见问题和预防方式。
+
+目标是让 AI 助手和新成员无需依赖口头说明，也能写出符合项目习惯的代码。
+
+---
+
+**语言约定**：规范正文统一使用中文；代码、命令和技术专有名词保留原文。

@@ -11,15 +11,15 @@ const count = ref(0)
   <section id="center">
     <div class="hero">
       <img :src="heroImg" class="base" width="170" height="179" alt="" />
-      <img :src="vueLogo" class="framework" alt="Vue logo" />
-      <img :src="viteLogo" class="vite" alt="Vite logo" />
+      <img :src="vueLogo" class="framework" alt="Vue 标志" />
+      <img :src="viteLogo" class="vite" alt="Vite 标志" />
     </div>
     <div>
-      <h1>Get started</h1>
-      <p>Edit <code>src/App.vue</code> and save to test <code>HMR</code></p>
+      <h1>开始使用</h1>
+      <p>编辑 <code>src/App.vue</code> 并保存，即可体验 <code>HMR</code> 热更新</p>
     </div>
     <button type="button" class="counter" @click="count++">
-      Count is {{ count }}
+      当前计数：{{ count }}
     </button>
   </section>
 
@@ -30,19 +30,19 @@ const count = ref(0)
       <svg class="icon" role="presentation" aria-hidden="true">
         <use href="/icons.svg#documentation-icon"></use>
       </svg>
-      <h2>Documentation</h2>
-      <p>Your questions, answered</p>
+      <h2>官方文档</h2>
+      <p>查阅框架和构建工具的使用指南</p>
       <ul>
         <li>
           <a href="https://vite.dev/" target="_blank">
             <img class="logo" :src="viteLogo" alt="" />
-            Explore Vite
+            查看 Vite 文档
           </a>
         </li>
         <li>
           <a href="https://vuejs.org/" target="_blank">
             <img class="button-icon" :src="vueLogo" alt="" />
-            Learn more
+            查看 Vue 文档
           </a>
         </li>
       </ul>
@@ -51,8 +51,8 @@ const count = ref(0)
       <svg class="icon" role="presentation" aria-hidden="true">
         <use href="/icons.svg#social-icon"></use>
       </svg>
-      <h2>Connect with us</h2>
-      <p>Join the Vite community</p>
+      <h2>加入社区</h2>
+      <p>了解 Vite 社区的最新动态</p>
       <ul>
         <li>
           <a href="https://github.com/vitejs/vite" target="_blank">

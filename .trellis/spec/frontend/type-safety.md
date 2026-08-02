@@ -1,51 +1,51 @@
-# Type Safety
+# 类型安全
 
-> Type safety patterns in this project.
+> 本项目使用 TypeScript 时遵循的类型约定。
 
 ---
 
-## Overview
+## 概述
 
 <!--
-Document your project's type safety conventions here.
+请在项目形成稳定实践后补充类型安全约定。
 
-Questions to answer:
-- What type system do you use?
-- How are types organized?
-- What validation library do you use?
-- How do you handle type inference?
+建议回答：
+- 类型如何组织和复用？
+- 哪些类型依赖推导，哪些需要显式声明？
+- 是否使用运行时校验库？
+- 外部数据在什么位置完成校验？
 -->
 
-(To be filled by the team)
+（待团队根据实际代码补充）
 
 ---
 
-## Type Organization
+## 类型组织
 
-<!-- Where types are defined, shared types vs local types -->
+<!-- 记录局部类型、共享类型和领域类型的存放位置。 -->
 
-(To be filled by the team)
-
----
-
-## Validation
-
-<!-- Runtime validation patterns (Zod, Yup, io-ts, etc.) -->
-
-(To be filled by the team)
+（待团队根据实际代码补充）
 
 ---
 
-## Common Patterns
+## 运行时校验
 
-<!-- Type utilities, generics, type guards -->
+<!-- 记录外部输入的校验边界和所用工具。 -->
 
-(To be filled by the team)
+（待团队根据实际代码补充）
 
 ---
 
-## Forbidden Patterns
+## 常用模式
 
-<!-- any, type assertions, etc. -->
+<!-- 记录类型工具、泛型、类型守卫和判别联合的使用方式。 -->
 
-(To be filled by the team)
+（待团队根据实际代码补充）
+
+---
+
+## 禁止模式
+
+<!-- 记录 any、非空断言、强制类型断言等模式的使用限制。 -->
+
+（待团队根据实际代码补充）

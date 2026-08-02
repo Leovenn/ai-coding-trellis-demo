@@ -1,51 +1,51 @@
-# Hook Guidelines
+# 组合式函数规范
 
-> How hooks are used in this project.
+> 本项目使用 Vue Composable 复用有状态逻辑时遵循的约定。
 
 ---
 
-## Overview
+## 概述
 
 <!--
-Document your project's hook conventions here.
+请在项目形成稳定实践后补充组合式函数约定。
 
-Questions to answer:
-- What custom hooks do you have?
-- How do you handle data fetching?
-- What are the naming conventions?
-- How do you share stateful logic?
+建议回答：
+- 项目中有哪些 Composable？
+- 数据请求如何处理？
+- 如何命名和组织组合式函数？
+- 如何共享有状态逻辑？
 -->
 
-(To be filled by the team)
+（待团队根据实际代码补充）
 
 ---
 
-## Custom Hook Patterns
+## Composable 模式
 
-<!-- How to create and structure custom hooks -->
+<!-- 记录组合式函数的职责、参数和返回值约定。 -->
 
-(To be filled by the team)
-
----
-
-## Data Fetching
-
-<!-- How data fetching is handled (React Query, SWR, etc.) -->
-
-(To be filled by the team)
+（待团队根据实际代码补充）
 
 ---
 
-## Naming Conventions
+## 数据请求
 
-<!-- Hook naming rules (use*, etc.) -->
+<!-- 记录数据请求、加载状态、错误状态和取消请求的处理方式。 -->
 
-(To be filled by the team)
+（待团队根据实际代码补充）
 
 ---
 
-## Common Mistakes
+## 命名约定
 
-<!-- Hook-related mistakes your team has made -->
+<!-- 例如：组合式函数是否统一使用 use 前缀。 -->
 
-(To be filled by the team)
+（待团队根据实际代码补充）
+
+---
+
+## 常见问题
+
+<!-- 记录项目中真实出现过的组合式函数问题。 -->
+
+（待团队根据实际代码补充）
