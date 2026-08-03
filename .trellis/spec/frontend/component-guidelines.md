@@ -49,6 +49,21 @@
 - 大标题通过字重、字距和留白建立层级，正文保持适合中文阅读的行高。
 - 图标使用 `@lucide/vue`，图标辅助文字，不替代必要标签。
 
+## 动效与减少动态效果
+
+- 列表增删和分组迁移使用 `@formkit/auto-animate/vue` 导出的 `useAutoAnimate`；不存在 `@vueuse/auto-animate` 这个包。
+- 进行中和已完成列表仍保持独立的语义化 `<section>`，分别挂载 auto-animate 容器，不为动效牺牲标题与分区语义。
+- 动效只是渲染增强，不能改变 `createTodo()`、`setTodoCompleted()` 等领域状态转换。
+- 所有非必要动画必须尊重 `prefers-reduced-motion: reduce`：关闭 auto-animate、彩带和数字缓动，CSS 动画同时提供 `@media (prefers-reduced-motion: reduce)` 降级。
+- Checkbox 的业务性对勾动画通过现有 indicator slot 组合，不改写 Registry 组件内部默认 class。
+
+```ts
+import { useAutoAnimate } from '@formkit/auto-animate/vue'
+
+const [list, enableAnimation] = useAutoAnimate<HTMLElement>({ duration: 260 })
+// 模板：<ul ref="list">...</ul>
+```
+
 ## 当前边界
 
 - 基础版仅包含新增、完成状态切换、分组展示和数量统计。

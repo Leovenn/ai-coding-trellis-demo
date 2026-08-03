@@ -41,6 +41,24 @@ pnpm run test:watch
 pnpm run build
 ```
 
+## 测试发现隔离
+
+Trellis/Claude 子代理会在仓库内的 `.claude/worktrees/` 创建完整源码副本。Vitest 若使用默认递归发现，会误执行这些副本中的测试，造成重复套件、缺文件或 Vue 运行时交叉污染。
+
+`vite.config.ts` 必须保留以下排除项：
+
+```ts
+import { configDefaults, defineConfig } from 'vitest/config'
+
+export default defineConfig({
+  test: {
+    exclude: [...configDefaults.exclude, '**/.claude/worktrees/**'],
+  },
+})
+```
+
+验证应从仓库根目录执行 `pnpm test`；只在单个代理 worktree 内通过不等于根目录质量门禁通过。
+
 ## 必须遵循
 
 - 新增纯函数时补充单元测试。
