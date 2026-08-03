@@ -1,60 +1,57 @@
-# 成绩领域模型
+# 待办领域模型
 
-> 本文件描述基础版已经存在的数据结构和统计行为。成绩规则后续发生变化时，必须同步更新本文件。
+> 本文件描述基础版已经存在的数据结构和状态行为。待办生命周期发生变化时，必须同步更新本文件。
 
 ---
 
-## StudentScore
+## TodoItem
 
-领域模型定义在 [src/domain/score.ts](../../../src/domain/score.ts)：
+领域模型定义在 [src/domain/todo.ts](../../../src/domain/todo.ts)：
 
 | 字段 | 类型 | 当前含义 |
 | --- | --- | --- |
-| `id` | `string` | 页面内稳定且唯一的成绩记录标识 |
-| `studentName` | `string` | 学生姓名 |
-| `subject` | `Subject` | 语文、数学或英语 |
-| `score` | `number` | 当前录入的数字成绩 |
-| `recordedAt` | `string` | 面向中文界面展示的录入日期 |
+| `id` | `string` | 页面内稳定且唯一的待办标识 |
+| `title` | `string` | 待办内容 |
+| `completed` | `boolean` | 是否已经完成 |
+| `createdAt` | `string` | 面向当前中文界面展示的创建时间 |
 
-## 科目
+当前模型没有删除状态，也没有 `deletedAt` 字段。
 
-`subjects` 是可选科目的唯一来源：
+## 创建待办
 
-```typescript
-export const subjects = ['语文', '数学', '英语'] as const
-export type Subject = (typeof subjects)[number]
-```
+`createTodo(id, title, createdAt)` 是创建完整领域对象的统一入口：
 
-表单选项和领域类型必须共同引用该常量，不在组件中维护第二份科目数组。
+- 接收已经完成边界清理的标题。
+- 新待办的 `completed` 固定为 `false`。
+- 返回新的 `TodoItem`，不引用表单状态对象。
 
-## 当前成绩输入
+组件负责输入框交互和空值判断，领域函数负责构造完整对象。
 
-当前基础版的数据流是：
+## 完成状态
 
-```text
-数字输入 → Number(...) → StudentScore.score → 列表和统计函数 → 页面展示
-```
+`setTodoCompleted(todos, todoId, completed)` 负责切换完成状态：
 
-基础版只拒绝空值和非有限数字，尚未定义 `0～100`、整数或等级规则。后续任务增加这些约束时，应在领域层建立统一入口，而不是只给输入框添加属性。
+- 接受只读集合。
+- 返回新数组。
+- 只为目标待办创建新对象，其他待办保持原引用。
+- 标识不存在时保持各项数据不变。
 
-## 统计函数
+页面不直接执行 `todo.completed = ...`。
 
-- `calculateAverageScore()` 负责平均分；空集合返回 `0`。
-- `findHighestScore()` 负责最高分记录；空集合返回 `null`。
-- 组件通过 `computed` 调用这两个函数，不保存第二份统计状态。
+## 数量概览
 
-统计规则发生变化时，应同时检查：
+`getTodoSummary()` 一次返回：
 
-- `StudentScore.score`
-- 表单输入边界
-- 领域统计函数
-- 概览卡片和成绩列表
-- `score.test.ts` 与相关组件测试
+- `total`：全部待办数量。
+- `completed`：已完成数量。
+- `remaining`：待完成数量。
+
+页面通过 `computed` 调用该函数，不保存第二份统计状态。
 
 ## 本地数据
 
-- `initialScores` 是只读的演示数据源。
+- `initialTodos` 是只读演示数据源。
 - 当前不进行持久化，刷新页面会恢复初始数据。
-- 页面初始化时复制演示数据，后续新增只修改组件自己的状态。
-- 当前基础版没有姓名搜索、成绩等级和等级分布统计。
+- 页面初始化时复制演示数据，后续交互只修改组件自己的状态。
+- 基础版不包含删除、回收站和批量清空行为。
 - 不添加后端接口、LocalStorage 或模拟请求，除非新任务明确提出。

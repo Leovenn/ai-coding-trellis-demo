@@ -1,45 +1,38 @@
 # 类型安全
 
-> 当前类型模式以 [src/domain/score.ts](../../../src/domain/score.ts) 为准。
+> 当前类型模式以 [src/domain/todo.ts](../../../src/domain/todo.ts) 为准。
 
 ---
 
 ## 领域类型
 
-- 使用 `StudentScore` 描述一条完整成绩记录。
-- 使用 `subjects as const` 同时生成运行时科目选项和 `Subject` 联合类型。
-- `subject` 不接受任意字符串，表单默认值显式满足 `Subject`。
-- 不在组件中复制领域接口或科目联合类型。
+- 使用 `TodoItem` 描述一条完整待办记录。
+- 使用 `TodoSummary` 描述从待办集合派生的数量概览。
+- 不在组件中复制领域接口或创建形状相近的临时待办类型。
 
 ```typescript
-export const subjects = ['语文', '数学', '英语'] as const
-export type Subject = (typeof subjects)[number]
-
-export interface StudentScore {
+export interface TodoItem {
   id: string
-  studentName: string
-  subject: Subject
-  score: number
-  recordedAt: string
+  title: string
+  completed: boolean
+  createdAt: string
 }
 ```
 
 ## 只读边界
 
-- 不会修改的集合使用 `readonly` 参数或 `readonly StudentScore[]`。
-- `calculateAverageScore()` 和 `findHighestScore()` 接受只读集合，保证统计函数不会修改调用方状态。
-- 初始演示数据对外暴露为只读集合，组件持有自己的可变副本。
+- 不会修改的集合使用 `readonly TodoItem[]`。
+- `setTodoCompleted()` 和 `getTodoSummary()` 接受只读集合，保证领域函数不会修改调用方状态。
+- `initialTodos` 对外暴露为只读集合，组件持有自己的可变副本。
+- 状态更新返回新数组，目标项发生变化时返回新对象。
 
 ## 输入边界
 
-shadcn-vue `Input` 的表单值在进入领域对象前显式转换：
-
-- 学生姓名清理首尾空格后不能为空。
-- 成绩原始值不能为空字符串。
-- 使用 `Number(...)` 转换数字输入。
-- 转换结果必须通过 `Number.isFinite()`。
-
-当前基础版没有成绩范围和整数规则。后续若建立这些约束，应由领域函数统一表达并被表单、统计和导入复用。
+- 输入框状态保持为 `string`。
+- 标题进入领域对象前调用 `trim()`。
+- 空标题不创建待办。
+- 标题最大长度由当前输入边界限制为 60 个字符。
+- Checkbox 更新值可能包含 `indeterminate`，进入领域函数前必须收窄为 `boolean`。
 
 ## 路径和配置
 
@@ -50,7 +43,7 @@ shadcn-vue `Input` 的表单值在进入领域对象前显式转换：
 ## 禁止模式
 
 - 禁止使用 `any` 绕过类型检查。
-- 禁止用强制断言掩盖未校验的表单输入。
-- 禁止为同一领域对象维护多份形状相近但语义不清的接口。
-- 禁止把可变数组参数传给只需要读取数据的统计函数。
-- 禁止在组件中复制成绩范围或等级区间。
+- 禁止用强制断言掩盖未收窄的 Checkbox 状态。
+- 禁止为同一待办维护多份形状相近但语义不清的接口。
+- 禁止把可变数组参数传给只需要读取数据的领域函数。
+- 禁止在组件中复制待办状态转换逻辑。
