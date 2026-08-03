@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { CalendarDaysIcon, ListChecksIcon, PlusIcon } from '@lucide/vue'
-import { computed, ref } from 'vue'
+import { useAutoAnimate } from '@formkit/auto-animate/vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import Celebration from '@/components/Celebration.vue'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { useAnimatedNumber } from '@/composables/useAnimatedNumber'
+import { useMotionController } from '@/composables/useMotionController'
 import {
   createTodo,
   getTodoSummary,
@@ -14,17 +18,81 @@ import {
 
 const todos = ref<TodoItem[]>(initialTodos.map((todo) => ({ ...todo })))
 const newTodoTitle = ref('')
+const celebrationTrigger = ref(0)
+const hasCelebrated = ref(false)
+const progressPulse = ref(false)
+const { reduced } = useMotionController()
+const [activeList, enableActiveAnimation] = useAutoAnimate<HTMLElement>({
+  duration: 260,
+  easing: 'ease-out',
+})
+const [completedList, enableCompletedAnimation] = useAutoAnimate<HTMLElement>({
+  duration: 260,
+  easing: 'ease-out',
+})
+const animationControllers = [
+  enableActiveAnimation,
+  enableCompletedAnimation,
+] as const
+let pulseTimer: ReturnType<typeof setTimeout> | undefined
+
+// The refs are bound by name in the template; keep an explicit script usage for vue-tsc.
+void activeList
+void completedList
 
 let nextTodoId = initialTodos.length + 1
 
 const activeTodos = computed(() => todos.value.filter((todo) => !todo.completed))
 const completedTodos = computed(() => todos.value.filter((todo) => todo.completed))
 const summary = computed(() => getTodoSummary(todos.value))
+const animatedCompleted = useAnimatedNumber(
+  () => summary.value.completed,
+  reduced,
+)
 const completionPercentage = computed(() =>
   summary.value.total === 0
     ? 0
     : Math.round((summary.value.completed / summary.value.total) * 100),
 )
+
+onMounted(() => {
+  for (const setAnimationEnabled of animationControllers) {
+    setAnimationEnabled(!reduced.value)
+  }
+})
+
+watch(reduced, (isReduced) => {
+  for (const setAnimationEnabled of animationControllers) {
+    setAnimationEnabled(!isReduced)
+  }
+})
+
+watch(completionPercentage, (percentage, previousPercentage) => {
+  if (
+    hasCelebrated.value ||
+    previousPercentage >= 100 ||
+    percentage !== 100
+  ) {
+    return
+  }
+
+  hasCelebrated.value = true
+  celebrationTrigger.value += 1
+
+  if (reduced.value) {
+    return
+  }
+
+  progressPulse.value = true
+  if (pulseTimer) clearTimeout(pulseTimer)
+  pulseTimer = setTimeout(() => {
+    progressPulse.value = false
+  }, 600)
+})
+
+onBeforeUnmount(() => {
+  if (pulseTimer) clearTimeout(pulseTimer)
+})
 
 const today = new Intl.DateTimeFormat('zh-CN', {
   month: 'long',
@@ -68,6 +136,7 @@ function updateTodoCompletion(
 
 <template>
   <main class="min-h-screen bg-[#f4f4f1] text-[#20201e]">
+    <Celebration :trigger="celebrationTrigger" />
     <div class="mx-auto w-full max-w-[860px] px-4 pb-8 sm:px-7">
       <header
         class="flex h-14 items-center justify-between border-b border-[#20201e]/8"
@@ -105,13 +174,20 @@ function updateTodoCompletion(
           <div class="w-full sm:w-48" aria-live="polite">
             <div class="mb-2 flex items-center justify-between text-[11px]">
               <span class="text-[#666662]">完成进度</span>
-              <span class="font-medium tabular-nums text-[#20201e]/65">
+              <span
+                aria-hidden="true"
+                class="font-medium tabular-nums text-[#20201e]/65"
+              >
+                {{ animatedCompleted }} / {{ summary.total }}
+              </span>
+              <span class="sr-only">
                 {{ summary.completed }} / {{ summary.total }}
               </span>
             </div>
             <div class="h-1 overflow-hidden rounded-full bg-[#20201e]/8">
               <div
-                class="h-full rounded-full bg-[#315ee7] transition-[width] duration-300"
+                class="h-full origin-left rounded-full bg-[#315ee7] transition-[width,transform,filter] duration-300 motion-reduce:transition-none"
+                :class="progressPulse ? 'scale-y-[1.8] brightness-110' : ''"
                 :style="{ width: `${completionPercentage}%` }"
               />
             </div>
@@ -162,8 +238,12 @@ function updateTodoCompletion(
             </span>
           </div>
 
-          <div v-if="activeTodos.length > 0" class="space-y-1">
-            <div
+          <ul
+            ref="activeList"
+            class="space-y-1"
+            aria-label="进行中的待办"
+          >
+            <li
               v-for="todo in activeTodos"
               :key="todo.id"
               class="group flex min-h-12 items-center gap-3 rounded-xl px-2.5 py-2 transition-colors hover:bg-[#f6f6f3]"
@@ -174,7 +254,24 @@ function updateTodoCompletion(
                 :aria-label="`完成待办：${todo.title}`"
                 class="size-[17px] rounded-[5px] border-[#20201e]/18 data-checked:border-[#315ee7] data-checked:bg-[#315ee7]"
                 @update:model-value="updateTodoCompletion(todo.id, $event)"
-              />
+              >
+                <svg
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  class="animated-check size-3.5"
+                  :class="reduced ? 'motion-reduced' : ''"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M3.25 8.25 6.5 11.25 12.75 4.75"
+                    pathLength="1"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </Checkbox>
               <label
                 :for="`todo-${todo.id}`"
                 class="flex min-w-0 flex-1 cursor-pointer items-center justify-between gap-4"
@@ -186,11 +283,11 @@ function updateTodoCompletion(
                   {{ todo.createdAt }}
                 </span>
               </label>
-            </div>
-          </div>
+            </li>
+          </ul>
 
           <div
-            v-else
+            v-if="activeTodos.length === 0"
             class="flex h-20 items-center justify-center rounded-xl bg-[#f7f7f4] text-xs text-[#666662]"
           >
             今天的事情都完成了。
@@ -214,8 +311,12 @@ function updateTodoCompletion(
             </span>
           </div>
 
-          <div class="space-y-1">
-            <div
+          <ul
+            ref="completedList"
+            class="space-y-1"
+            aria-label="已完成的待办"
+          >
+            <li
               v-for="todo in completedTodos"
               :key="todo.id"
               class="flex min-h-11 items-center gap-3 rounded-xl px-2.5 py-2 transition-colors hover:bg-white"
@@ -226,7 +327,24 @@ function updateTodoCompletion(
                 :aria-label="`重新打开待办：${todo.title}`"
                 class="size-[17px] rounded-[5px] border-[#20201e]/12 data-checked:border-[#20201e]/24 data-checked:bg-[#20201e]/24"
                 @update:model-value="updateTodoCompletion(todo.id, $event)"
-              />
+              >
+                <svg
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  class="animated-check size-3.5"
+                  :class="reduced ? 'motion-reduced' : ''"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M3.25 8.25 6.5 11.25 12.75 4.75"
+                    pathLength="1"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </Checkbox>
               <label
                 :for="`todo-${todo.id}`"
                 class="flex min-w-0 flex-1 cursor-pointer items-center justify-between gap-4"
@@ -238,8 +356,8 @@ function updateTodoCompletion(
                   可重新打开
                 </span>
               </label>
-            </div>
-          </div>
+            </li>
+          </ul>
         </section>
       </section>
 
@@ -250,3 +368,43 @@ function updateTodoCompletion(
     </div>
   </main>
 </template>
+
+<style scoped>
+.animated-check {
+  transform: scale(1);
+  animation: check-pop 320ms cubic-bezier(0.2, 0.9, 0.3, 1.25) both;
+}
+
+.animated-check path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  animation: check-draw 280ms ease-out both;
+}
+
+.animated-check.motion-reduced,
+.animated-check.motion-reduced path {
+  animation: none;
+}
+
+@keyframes check-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+@keyframes check-pop {
+  0% {
+    transform: scale(0.72);
+  }
+  65% {
+    transform: scale(1.14);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animated-check,
+  .animated-check path {
+    animation: none;
+  }
+}
+</style>

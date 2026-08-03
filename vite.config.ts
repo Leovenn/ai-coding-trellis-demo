@@ -1,7 +1,7 @@
 import path from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
-import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { configDefaults, defineConfig } from 'vitest/config'
 
 export default defineConfig({
   plugins: [vue(), tailwindcss()],
@@ -9,5 +9,8 @@ export default defineConfig({
     alias: {
       '@': path.resolve(import.meta.dirname, './src'),
     },
+  },
+  test: {
+    exclude: [...configDefaults.exclude, '**/.claude/worktrees/**'],
   },
 })

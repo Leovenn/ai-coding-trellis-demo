@@ -1,8 +1,13 @@
 // @vitest-environment jsdom
 
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import App from './App.vue'
+
+afterEach(() => {
+  vi.useRealTimers()
+  vi.unstubAllGlobals()
+})
 
 describe('App', () => {
   it('展示基础待办和完成概览', () => {
@@ -53,5 +58,57 @@ describe('App', () => {
     expect(wrapper.get('[aria-live="polite"]').text()).toContain(
       '还有 2 项待完成',
     )
+  })
+
+  it('全部完成时只展示一次庆祝反馈', async () => {
+    vi.useFakeTimers()
+    const wrapper = mount(App)
+
+    const activeCheckboxes = wrapper.findAll(
+      'section[aria-labelledby="active-heading"] [data-slot="checkbox"]',
+    )
+    for (const checkbox of activeCheckboxes) {
+      await checkbox.trigger('click')
+    }
+
+    expect(wrapper.find('[data-testid="celebration"]').exists()).toBe(true)
+
+    await vi.advanceTimersByTimeAsync(1200)
+    expect(wrapper.find('[data-testid="celebration"]').exists()).toBe(false)
+
+    await wrapper
+      .get('section[aria-labelledby="completed-heading"] [data-slot="checkbox"]')
+      .trigger('click')
+    expect(wrapper.find('[data-testid="celebration"]').exists()).toBe(false)
+
+    await wrapper
+      .get('section[aria-labelledby="active-heading"] [data-slot="checkbox"]')
+      .trigger('click')
+    expect(wrapper.find('[data-testid="celebration"]').exists()).toBe(false)
+  })
+
+  it('减少动态效果时保留功能且不展示庆祝动画', async () => {
+    const mediaQuery = {
+      matches: true,
+      media: '(prefers-reduced-motion: reduce)',
+      onchange: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }
+    vi.stubGlobal('matchMedia', vi.fn(() => mediaQuery))
+
+    const wrapper = mount(App)
+    const activeCheckboxes = wrapper.findAll(
+      'section[aria-labelledby="active-heading"] [data-slot="checkbox"]',
+    )
+    for (const checkbox of activeCheckboxes) {
+      await checkbox.trigger('click')
+    }
+
+    expect(wrapper.text()).toContain('今天的事情都完成了。')
+    expect(wrapper.find('[data-testid="celebration"]').exists()).toBe(false)
   })
 })
